@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --background-start: #0D1D43; /* Elegant Dark Blue */
+  --background-end: #040714;   /* Midnight Deep Navy */
+  --foreground: #F8FAFC;
+  --color-primary: #00E5FF;    /* Glowing Light Blue/Cyan */
+  --color-accent: #FF3D00;     /* Accent orange */
+  --color-card: rgba(13, 27, 62, 0.45); /* Glassmorphic dark blue */
+  --color-border-custom: rgba(0, 229, 255, 0.12); /* Subtle light blue border */
+}
+
+@theme inline {
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-accent: var(--color-accent);
+  --color-card: var(--color-card);
+  --color-border-custom: var(--color-border-custom);
+  
+  --font-sans: var(--font-outfit);
+  --font-serif: var(--font-playfair);
+  --font-mono: var(--font-geist-mono);
+  
+  /* Animations */
+  --animate-fade-in: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-up: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-scale-up: scale-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes scale-up {
+    from { transform: scale(0.97); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-3deg) scaleY(1); opacity: 0.5; }
+    50% { transform: rotate(3deg) scaleY(1.05); opacity: 0.85; }
+  }
+  @keyframes float-up {
+    0% { transform: translateY(105vh) translateX(0) scale(0.7); opacity: 0; }
+    10% { opacity: 0.35; }
+    90% { opacity: 0.35; }
+    100% { transform: translateY(-15vh) translateX(45px) scale(1.1); opacity: 0; }
+  }
+  @keyframes swim-lr {
+    0% { transform: translateX(-150px) translateY(0) scaleX(1); }
+    50% { transform: translateX(50vw) translateY(-25px) scaleX(1); }
+    100% { transform: translateX(110vw) translateY(5px) scaleX(1); }
+  }
+  @keyframes swim-rl {
+    0% { transform: translateX(110vw) translateY(0) scaleX(-1); }
+    50% { transform: translateX(50vw) translateY(20px) scaleX(-1); }
+    100% { transform: translateX(-150px) translateY(-5px) scaleX(-1); }
+  }
+}
+
+body {
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.25) 0%, transparent 60%),
+    radial-gradient(circle at 0% 0%, rgba(13, 58, 124, 0.35) 0%, transparent 50%),
+    #040714;
+  background-attachment: fixed;
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, .font-serif {
+  font-family: var(--font-serif), Georgia, serif;
+}
