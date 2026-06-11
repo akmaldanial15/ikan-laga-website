@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { mockBettas, BettaFish } from "@/mock/mockData";
+import { useRouter } from "next/navigation";
 
 interface CartItem {
   fish: BettaFish;
@@ -11,6 +12,7 @@ interface CartItem {
 type ShopView = "catalog" | "detail" | "checkout";
 
 export default function Shop() {
+  const router = useRouter();
   const [view, setView] = useState<ShopView>("catalog");
   const [selectedFish, setSelectedFish] = useState<BettaFish | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,15 +32,19 @@ export default function Shop() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const fishId = params.get("fish");
+      const checkoutId = params.get("checkout");
+      
       if (fishId) {
-        const found = mockBettas.find((f) => f.id === fishId && f.orderable);
+        router.replace(`/shop/${fishId}`);
+      } else if (checkoutId) {
+        const found = mockBettas.find((f) => f.id === checkoutId && f.orderable);
         if (found) {
-          setSelectedFish(found);
-          setView("detail");
+          setCart([{ fish: found, quantity: 1 }]);
+          setView("checkout");
         }
       }
     }
-  }, []);
+  }, [router]);
 
   const filteredBettas = mockBettas
     .filter((fish) => fish.orderable)
@@ -50,8 +56,7 @@ export default function Shop() {
     );
 
   const selectProductForDetail = (fish: BettaFish) => {
-    setSelectedFish(fish);
-    setView("detail");
+    router.push(`/shop/${fish.id}`);
   };
 
   const handleBuyNow = (fish: BettaFish) => {

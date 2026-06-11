@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { mockBettas, BettaFish } from "@/mock/mockData";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [selectedFish, setSelectedFish] = useState<BettaFish | null>(null);
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
   React.useEffect(() => {
@@ -12,19 +13,10 @@ export default function Home() {
       const params = new URLSearchParams(window.location.search);
       const articleId = params.get("article");
       if (articleId) {
-        const found = mockBettas.find((fish) => fish.id === articleId);
-        if (found) {
-          setSelectedFish(found);
-          setTimeout(() => {
-            const element = document.getElementById("encyclopedia");
-            if (element) {
-              element.scrollIntoView({ behavior: "smooth" });
-            }
-          }, 100);
-        }
+        router.replace(`/encyclopedia/${articleId}`);
       }
     }
-  }, []);
+  }, [router]);
 
   const filteredBettas = mockBettas.filter(
     (fish) =>
@@ -61,7 +53,7 @@ export default function Home() {
               Satu perkongsian penceritaan untuk menghargai warisan alam semula jadi kita.
             </p>
             <button
-              onClick={() => setSelectedFish(mockBettas[0])}
+              onClick={() => router.push(`/encyclopedia/${mockBettas[0].id}`)}
               className="cursor-pointer rounded-xl bg-primary px-7 py-3.5 text-xs font-black text-black shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98]"
             >
               Baca Kisah Imbellis
@@ -99,7 +91,7 @@ export default function Home() {
               filteredBettas.map((fish) => (
                 <div
                   key={fish.id}
-                  onClick={() => setSelectedFish(fish)}
+                  onClick={() => router.push(`/encyclopedia/${fish.id}`)}
                   className="group w-[320px] shrink-0 cursor-pointer rounded-2xl border border-border-custom bg-card/45 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5"
                 >
                   <div className="h-48 overflow-hidden relative">
@@ -136,88 +128,6 @@ export default function Home() {
         </section>
 
       </main>
-
-      {/* ARTICLE READER MODAL (WWF Editorial Story + Shop Links) */}
-      {selectedFish && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 md:p-6 backdrop-blur-md animate-fade-in">
-          <div className="relative flex h-full max-h-[85vh] w-full max-w-2xl flex-col rounded-3xl border border-border-custom bg-card overflow-hidden shadow-2xl animate-scale-up">
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedFish(null)}
-              className="cursor-pointer absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white hover:bg-black/75 hover:scale-105 transition-all duration-200"
-            >
-              ✕
-            </button>
-
-            {/* Modal Scroll Content */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="h-72 w-full relative">
-                <img
-                  src={selectedFish.image}
-                  alt={selectedFish.name}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
-              </div>
-
-              <div className="p-6 md:p-10">
-                <span className="text-xs text-zinc-400 font-semibold tracking-wider">📍 ASAL HABITAT: {selectedFish.origin}</span>
-                <h2 className="text-3xl font-black font-serif text-white mt-1.5">{selectedFish.name}</h2>
-                <p className="text-sm text-primary font-serif italic mt-1 mb-6">{selectedFish.scientificName}</p>
-
-                <div className="flex gap-2 items-center mb-6">
-                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider ${
-                    selectedFish.rarity === "Extremely Rare" ? "bg-accent/15 text-accent border border-accent/25" : "bg-primary/10 text-primary border border-primary/25"
-                  }`}>
-                    {selectedFish.rarity.toUpperCase()}
-                  </span>
-                  {selectedFish.orderable ? (
-                    <span className="rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 text-[10px] font-extrabold">
-                      🛒 SEDIA DIORDER
-                    </span>
-                  ) : (
-                    <span className="rounded-full bg-zinc-850/80 text-zinc-400 border border-zinc-700/50 px-2.5 py-0.5 text-[10px] font-extrabold">
-                      🏛️ PAMERAN SAHAJA
-                    </span>
-                  )}
-                </div>
-
-                {/* Styled Editorial Body Copy */}
-                <p className="text-sm md:text-base text-zinc-300 leading-relaxed text-justify mb-8 font-sans">
-                  <span className="float-left mr-3 text-6xl md:text-7xl font-black text-primary font-serif leading-[0.8] mt-1">
-                    {selectedFish.fullStory.charAt(0)}
-                  </span>
-                  {selectedFish.fullStory.slice(1)}
-                </p>
-              </div>
-            </div>
-
-            {/* Modal Footer with Shop Redirect Link */}
-            <div className="border-t border-border-custom bg-zinc-950/70 backdrop-blur-md p-6 md:px-10 flex items-center justify-between">
-              {selectedFish.orderable ? (
-                <>
-                  <div>
-                    <span className="text-xs text-zinc-500">Harga Baka</span>
-                    <p className="text-xl font-black text-primary font-sans">RM {selectedFish.price.toFixed(2)}</p>
-                  </div>
-                  <a
-                    href={`/shop?fish=${selectedFish.id}`}
-                    className="rounded-xl bg-primary px-7 py-3.5 text-xs font-black text-black shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300 inline-block text-center cursor-pointer"
-                  >
-                    Beli di Kedai 🛒
-                  </a>
-                </>
-              ) : (
-                <div className="w-full text-center">
-                  <p className="text-xs text-zinc-500 italic">
-                    Spesies pameran ini tidak dibuka untuk jualan buat masa sekarang.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

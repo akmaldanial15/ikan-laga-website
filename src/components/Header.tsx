@@ -1,9 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Hide header on admin pages
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border-custom bg-background/60 backdrop-blur-lg">
@@ -17,7 +24,7 @@ export default function Header() {
 
         {/* Desktop Nav Links */}
         <nav className="hidden md:flex items-center gap-6">
-          <a href="/" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
+          <a href="/encyclopedia" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
             Ensiklopedia
           </a>
           <a href="/shop" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
@@ -49,7 +56,7 @@ export default function Header() {
       {/* Mobile Dropdown Panel */}
       {mobileMenuOpen && (
         <nav className="md:hidden flex flex-col border-t border-border-custom bg-background px-6 py-4 space-y-3 animate-fade-in font-sans">
-          <a href="/" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors py-1.5" onClick={() => setMobileMenuOpen(false)}>
+          <a href="/encyclopedia" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors py-1.5" onClick={() => setMobileMenuOpen(false)}>
             Ensiklopedia
           </a>
           <a href="/shop" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors py-1.5" onClick={() => setMobileMenuOpen(false)}>
