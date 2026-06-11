@@ -15,12 +15,16 @@ export default function Shop() {
   const [selectedFish, setSelectedFish] = useState<BettaFish | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
 
   // Form states
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [courier, setCourier] = useState("J&T Express (Semenanjung)");
+
+  // Dynamic categories list based on available mock products
+  const categories = ["Semua", ...Array.from(new Set(mockBettas.map(f => f.category || "Wild Betta")))];
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -38,6 +42,7 @@ export default function Shop() {
 
   const filteredBettas = mockBettas
     .filter((fish) => fish.orderable)
+    .filter((fish) => selectedCategory === "Semua" || (fish.category || "Wild Betta") === selectedCategory)
     .filter(
       (fish) =>
         fish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -166,6 +171,23 @@ export default function Shop() {
                   className="w-full rounded-xl border border-border-custom bg-card/30 pl-10 pr-4 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all backdrop-blur-sm"
                 />
               </div>
+            </div>
+
+            {/* Category Filter Tabs */}
+            <div className="flex flex-wrap gap-2 mb-8 border-b border-border-custom/20 pb-5">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`cursor-pointer px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 border ${
+                    selectedCategory === cat
+                      ? "bg-primary text-black border-primary font-black shadow-lg shadow-primary/20 scale-102"
+                      : "bg-card/20 text-zinc-400 border-border-custom hover:border-primary/40 hover:text-white"
+                  }`}
+                >
+                  {cat === "Semua" ? "🐟 Semua" : cat}
+                </button>
+              ))}
             </div>
 
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">

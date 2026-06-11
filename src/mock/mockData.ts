@@ -10,6 +10,7 @@ export interface BettaFish {
   inStock: boolean;
   orderable: boolean;
   rarity: 'Common' | 'Rare' | 'Extremely Rare';
+  category?: string; // Optional category (e.g. 'Wild Betta', 'Mekong River Fish')
 }
 
 export const mockBettas: BettaFish[] = [
@@ -24,7 +25,8 @@ export const mockBettas: BettaFish[] = [
     price: 65.00,
     inStock: true,
     orderable: true,
-    rarity: 'Rare'
+    rarity: 'Rare',
+    category: 'Wild Betta'
   },
   {
     id: 'betta-splendens-wild',
@@ -37,7 +39,8 @@ export const mockBettas: BettaFish[] = [
     price: 50.00,
     inStock: true,
     orderable: true,
-    rarity: 'Common'
+    rarity: 'Common',
+    category: 'Wild Betta'
   },
   {
     id: 'betta-pugnax',
@@ -50,6 +53,21 @@ export const mockBettas: BettaFish[] = [
     price: 80.00,
     inStock: false,
     orderable: false,
-    rarity: 'Extremely Rare'
+    rarity: 'Extremely Rare',
+    category: 'Wild Betta'
+  },
+  {
+    id: 'mekong-fire-eel',
+    name: 'Mekong Fire Eel (Belut Api)',
+    scientificName: 'Mastacembelus erythrotaenia',
+    origin: 'Sungai Mekong, Vietnam',
+    description: 'Spesies belut air tawar eksotik dengan garisan merah berapi yang mempesonakan sepanjang badannya yang gelap.',
+    fullStory: 'Fire Eel dari Sungai Mekong ini adalah kegemaran pengumpul ikan hiasan eksotik. Mereka suka bersembunyi di celah-celah kayu mati atau pasir halus akuarium. Memerlukan air yang bersih dan aliran sederhana untuk meniru habitat sungai Mekong yang kaya dengan hidupan eksotik.',
+    image: '/images/betta_imbellis.png', // Temporary fallback
+    price: 135.00,
+    inStock: true,
+    orderable: true,
+    rarity: 'Rare',
+    category: 'Mekong River Fish'
   }
 ];

@@ -13,6 +13,8 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("products"); // 'products' | 'articles'
   const [products, setProducts] = useState<BettaFish[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
+  const [showCustomCategory, setShowCustomCategory] = useState(false);
 
   // Product Form State
   const [newFish, setNewFish] = useState({
@@ -24,7 +26,11 @@ export default function AdminDashboard() {
     price: "",
     rarity: "Common",
     inStock: "true",
+    category: "Wild Betta",
   });
+
+  // Dynamic categories list based on existing products in dashboard state
+  const existingCategories = Array.from(new Set(products.map(p => p.category || "Wild Betta")));
 
   useEffect(() => {
     // Load initial mock products
@@ -54,6 +60,12 @@ export default function AdminDashboard() {
       return;
     }
 
+    const finalCategory = showCustomCategory ? customCategory.trim() : newFish.category;
+    if (showCustomCategory && !finalCategory) {
+      alert("Sila masukkan nama kategori baru.");
+      return;
+    }
+
     const createdFish: BettaFish = {
       id: `betta-${newFish.name.toLowerCase().replace(/\s+/g, "-")}`,
       name: newFish.name,
@@ -66,10 +78,11 @@ export default function AdminDashboard() {
       inStock: newFish.inStock === "true",
       orderable: newFish.inStock === "true",
       rarity: newFish.rarity as "Common" | "Rare" | "Extremely Rare",
+      category: finalCategory || "Wild Betta",
     };
 
     setProducts([createdFish, ...products]);
-    setSuccessMessage(`Berjaya menambah produk "${newFish.name}"!`);
+    setSuccessMessage(`Berjaya menambah produk "${newFish.name}" ke kategori "${finalCategory || "Wild Betta"}"!`);
     
     // Clear Form
     setNewFish({
@@ -81,7 +94,10 @@ export default function AdminDashboard() {
       price: "",
       rarity: "Common",
       inStock: "true",
+      category: "Wild Betta",
     });
+    setCustomCategory("");
+    setShowCustomCategory(false);
 
     // Clear alert after 3 seconds
     setTimeout(() => {
@@ -202,7 +218,7 @@ export default function AdminDashboard() {
                       <div>
                         <h4 className={styles.itemName}>{item.name}</h4>
                         <p className={styles.itemCategory}>
-                          {item.scientificName} • <span className="text-cyan-400">{item.rarity}</span>
+                          {item.scientificName} • <span className="text-cyan-400">{item.rarity}</span> • <span className="text-zinc-400 font-bold bg-zinc-800/80 px-1.5 py-0.5 rounded text-[10px]">{item.category || "Wild Betta"}</span>
                         </p>
                       </div>
                     </div>
@@ -264,6 +280,45 @@ export default function AdminDashboard() {
                     onChange={(e) => setNewFish({ ...newFish, origin: e.target.value })}
                   />
                 </div>
+
+                {/* Category Selection */}
+                <div className={styles.inputGroup}>
+                  <label className={styles.label}>Kategori Produk</label>
+                  <select
+                    className={styles.select}
+                    value={showCustomCategory ? "custom" : newFish.category}
+                    onChange={(e) => {
+                      if (e.target.value === "custom") {
+                        setShowCustomCategory(true);
+                      } else {
+                        setShowCustomCategory(false);
+                        setNewFish({ ...newFish, category: e.target.value });
+                      }
+                    }}
+                  >
+                    {existingCategories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                    <option value="custom">+ Tambah Kategori Baru...</option>
+                  </select>
+                </div>
+
+                {/* Custom Category Input */}
+                {showCustomCategory && (
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Nama Kategori Baharu</label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      placeholder="e.g. Mekong River Fish"
+                      value={customCategory}
+                      onChange={(e) => setCustomCategory(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className={styles.inputGroup}>
