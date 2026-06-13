@@ -3,6 +3,7 @@ import { Outfit, Playfair_Display, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import OceanBackground from "@/components/OceanBackground";
 import Header from "@/components/Header";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -35,11 +36,13 @@ export default function RootLayout({
       className={`${outfit.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col relative bg-background">
-        <OceanBackground />
-        <div className="relative z-10 flex-1 flex flex-col">
-          <Header />
-          {children}
-        </div>
+        <LanguageProvider>
+          <OceanBackground />
+          <div className="relative z-10 flex-1 flex flex-col">
+            <Header />
+            {children}
+          </div>
+        </LanguageProvider>
       </body>
     </html>
   );
