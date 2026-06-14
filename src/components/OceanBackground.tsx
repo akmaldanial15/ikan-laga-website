@@ -10,18 +10,10 @@ interface Bubble {
   duration: string;
 }
 
-interface Fish {
-  id: number;
-  top: string;
-  scale: string;
-  delay: string;
-  duration: string;
-  direction: "lr" | "rl";
-}
+
 
 export default function OceanBackground() {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
-  const [fishes, setFishes] = useState<Fish[]>([]);
 
   useEffect(() => {
     // Generate random bubble values to prevent hydration mismatches
@@ -33,15 +25,6 @@ export default function OceanBackground() {
       duration: `${Math.random() * 15 + 10}s`,
     }));
     setBubbles(tempBubbles);
-
-    // Generate random fish tracks
-    const tempFishes: Fish[] = [
-      { id: 1, top: "20%", scale: "0.45", delay: "0s", duration: "28s", direction: "lr" },
-      { id: 2, top: "45%", scale: "0.6", delay: "8s", duration: "34s", direction: "rl" },
-      { id: 3, top: "70%", scale: "0.35", delay: "4s", duration: "24s", direction: "lr" },
-      { id: 4, top: "85%", scale: "0.55", delay: "15s", duration: "40s", direction: "rl" },
-    ];
-    setFishes(tempFishes);
   }, []);
 
   return (
@@ -64,41 +47,6 @@ export default function OceanBackground() {
         />
       ))}
 
-      {/* Glowing Fish Silhouettes */}
-      {fishes.map((f) => (
-        <div
-          key={f.id}
-          className={`absolute opacity-20 filter drop-shadow-[0_0_8px_rgba(0,229,255,0.4)] ${
-            f.direction === "lr" ? "animate-[swim-lr_30s_linear_infinite]" : "animate-[swim-rl_30s_linear_infinite]"
-          }`}
-          style={{
-            top: f.top,
-            transform: `scale(${f.scale})`,
-            animationDelay: f.delay,
-            animationDuration: f.duration,
-          }}
-        >
-          {/* Detailed elegant wild betta fish SVG silhouette */}
-          <svg
-            width="120"
-            height="50"
-            viewBox="0 0 120 50"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-primary fill-current"
-          >
-            <path d="M15,25 C30,12 55,15 75,22 C85,25 95,20 100,16 C95,25 98,32 105,38 C90,34 85,28 75,26 C55,30 30,35 15,25 Z" />
-            {/* Top dorsal fin */}
-            <path d="M40,16 Q58,-2 72,12 Q60,16 40,16 Z" opacity="0.85" />
-            {/* Elegant long flowing tail fin of wild betta */}
-            <path d="M100,16 C110,8 122,2 114,22 C125,28 120,44 105,38 C102,34 98,28 100,16 Z" opacity="0.9" />
-            {/* Ventral flowing fin */}
-            <path d="M45,26 Q60,45 78,35 Q65,28 45,26 Z" opacity="0.8" />
-            {/* Pectoral tiny fin */}
-            <path d="M28,26 C31,29 34,35 32,38 C30,35 28,30 28,26 Z" opacity="0.95" />
-          </svg>
-        </div>
-      ))}
     </div>
   );
 }

@@ -1,11 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+
+  // Secret routing to admin panel via Ctrl + Click
+  const handleMyClick = (e: React.MouseEvent) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      router.push("/admin");
+    }
+  };
 
   // Hide header on admin pages
   if (pathname?.startsWith("/admin")) {
@@ -19,7 +28,12 @@ export default function Header() {
           <a href="/" className="text-xl font-black tracking-wider text-primary font-sans hover:opacity-85 transition-opacity">
             WILD BETTA
           </a>
-          <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">MY</span>
+          <span 
+            onClick={handleMyClick}
+            className="rounded bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary select-none cursor-default active:bg-primary/20"
+          >
+            MY
+          </span>
         </div>
 
         {/* Desktop Nav Links */}

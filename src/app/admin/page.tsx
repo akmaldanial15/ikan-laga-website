@@ -32,6 +32,26 @@ export default function AdminDashboard() {
   // Dynamic categories list based on existing products in dashboard state
   const existingCategories = Array.from(new Set(products.map(p => p.category || "Wild Betta")));
 
+  // Device detection state
+  const [isMobile, setIsMobile] = useState(false);
+  const [checkingDevice, setCheckingDevice] = useState(true);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      const userAgent = typeof navigator !== "undefined" ? navigator.userAgent : "";
+      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+      const isMobileUA = mobileRegex.test(userAgent);
+      const isSmallScreen = window.innerWidth < 1024; // Blocks mobile and tablets
+      
+      setIsMobile(isMobileUA || isSmallScreen);
+      setCheckingDevice(false);
+    };
+
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
+    return () => window.removeEventListener("resize", checkDevice);
+  }, []);
+
   useEffect(() => {
     // Load initial mock products
     setProducts(mockBettas);
@@ -112,6 +132,40 @@ export default function AdminDashboard() {
       setTimeout(() => setSuccessMessage(""), 3000);
     }
   };
+
+  if (checkingDevice) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#040714] text-zinc-400">
+        <div className="text-center space-y-2">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#00E5FF] border-t-transparent mx-auto" />
+          <p className="text-sm font-semibold">Memeriksa peranti...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#040714] px-6 text-center">
+        <div className="max-w-md p-8 rounded-2xl border border-zinc-800 bg-[#0d1b3e]/45 backdrop-blur-md space-y-6">
+          <div className="text-5xl">💻❌</div>
+          <h1 className="text-2xl font-bold text-white font-serif">Akses Dihadkan</h1>
+          <p className="text-sm text-zinc-300 leading-relaxed">
+            Halaman Pentadbir (Admin Dashboard) ini **hanya boleh diakses menggunakan komputer (PC/Laptop)**. 
+            Peranti mudah alih (mobile/tablet) tidak dibenarkan untuk mengakses halaman ini demi keselamatan.
+          </p>
+          <div className="pt-2">
+            <a 
+              href="/" 
+              className="inline-block px-6 py-2.5 rounded-xl bg-[#00E5FF] text-black font-black text-xs uppercase tracking-wider hover:opacity-90 transition-opacity"
+            >
+              Kembali Ke Halaman Utama
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return (

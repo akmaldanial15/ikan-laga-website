@@ -10,7 +10,7 @@ export interface BettaFish {
   inStock: boolean;
   orderable: boolean;
   rarity: 'Common' | 'Rare' | 'Extremely Rare';
-  category?: string; // bred category ('Wild-Caught', 'Show-Grade'Captive-Bred')
+  category?: string; // bred category ('Wild-Caught', 'Show-Grade','Captive-Bred')
 }
 
 export const mockBettas: BettaFish[] = [
