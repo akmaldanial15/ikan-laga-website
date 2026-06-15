@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { mockBettas, BettaFish } from "@/mock/mockData";
+import { BettaFish, mockBettas } from "@/mock/mockData";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 interface CartItem {
   fish: BettaFish;
@@ -33,7 +33,7 @@ export default function Shop() {
       const params = new URLSearchParams(window.location.search);
       const fishId = params.get("fish");
       const checkoutId = params.get("checkout");
-      
+
       if (fishId) {
         router.replace(`/shop/${fishId}`);
       } else if (checkoutId) {
@@ -66,9 +66,10 @@ export default function Shop() {
 
   const updateQuantity = (delta: number) => {
     setCart((prevCart) =>
-      prevCart
-        .map((item) => ({ ...item, quantity: item.quantity + delta }))
-        .filter((item) => item.quantity > 0)
+      prevCart.map((item) => {
+        const newQuantity = item.quantity + delta;
+        return { ...item, quantity: newQuantity < 1 ? 1 : newQuantity };
+      })
     );
   };
 
@@ -135,20 +136,18 @@ export default function Shop() {
             return (
               <div key={s.key} className="flex flex-col items-center z-10 relative">
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-extrabold border transition-all duration-300 ${
-                    isCurrent
-                      ? "bg-primary text-black border-primary ring-4 ring-primary/20 scale-105"
-                      : isActive
+                  className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-extrabold border transition-all duration-300 ${isCurrent
+                    ? "bg-primary text-black border-primary ring-4 ring-primary/20 scale-105"
+                    : isActive
                       ? "bg-zinc-900 text-primary border-primary"
                       : "bg-zinc-950 text-zinc-500 border-border-custom"
-                  }`}
+                    }`}
                 >
                   {s.step}
                 </div>
                 <span
-                  className={`text-[10px] font-black mt-2 tracking-wider uppercase transition-colors duration-300 ${
-                    isCurrent ? "text-primary" : isActive ? "text-zinc-300" : "text-zinc-500"
-                  }`}
+                  className={`text-[10px] font-black mt-2 tracking-wider uppercase transition-colors duration-300 ${isCurrent ? "text-primary" : isActive ? "text-zinc-300" : "text-zinc-500"
+                    }`}
                 >
                   {s.label}
                 </span>
@@ -184,11 +183,10 @@ export default function Shop() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`cursor-pointer px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 border ${
-                    selectedCategory === cat
-                      ? "bg-primary text-black border-primary font-black shadow-lg shadow-primary/20 scale-102"
-                      : "bg-card/20 text-zinc-400 border-border-custom hover:border-primary/40 hover:text-white"
-                  }`}
+                  className={`cursor-pointer px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 border ${selectedCategory === cat
+                    ? "bg-primary text-black border-primary font-black shadow-lg shadow-primary/20 scale-102"
+                    : "bg-card/20 text-zinc-400 border-border-custom hover:border-primary/40 hover:text-white"
+                    }`}
                 >
                   {cat === "Semua" ? "🐟 Semua" : cat}
                 </button>
@@ -364,7 +362,7 @@ export default function Shop() {
             {/* Checkout Form */}
             <form onSubmit={handleCheckout} className="rounded-2xl border border-border-custom bg-card/45 p-6 md:p-8 space-y-6">
               <h3 className="text-xs font-black text-white uppercase tracking-wider text-primary">Maklumat Pos Penerima</h3>
-              
+
               <div className="space-y-4 font-sans">
                 <div>
                   <label className="block text-[10px] text-zinc-500 uppercase font-black tracking-wider mb-1.5">Nama Penuh</label>
@@ -410,6 +408,7 @@ export default function Shop() {
                     className="w-full rounded-xl border border-border-custom bg-zinc-950/80 p-3.5 text-xs text-zinc-300 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
                   >
                     <option value="J&T Express (Semenanjung)">J&T Express (Semenanjung - RM15.00)</option>
+                    <option value="Line Clear Express (Semenanjung)">Line Clear Express (Semenanjung - RM15.00)</option>
                     <option value="PosLaju (Semenanjung)">PosLaju (Semenanjung - RM15.00)</option>
                     <option value="J&T Express (Sabah/Sarawak)">J&T Express (Sabah/Sarawak - RM20.00)</option>
                     <option value="Self-Pickup (Kulim, Kedah)">Self-Pickup (Ambil Sendiri di Kulim - Percuma)</option>
