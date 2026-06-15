@@ -3,10 +3,12 @@
 import React, { useState } from "react";
 import { mockBettas, BettaFish } from "../../mock/mockData";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function EncyclopediaIndex() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const { locale } = useLanguage();
 
   const filteredBettas = mockBettas.filter(
     (fish) =>
@@ -22,9 +24,13 @@ export default function EncyclopediaIndex() {
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border-custom/30 pb-6">
           <div>
-            <h1 className="text-3xl font-black font-serif tracking-tight text-white">Ensiklopedia Ikan Laga Liar</h1>
+            <h1 className="text-3xl font-black font-serif tracking-tight text-white">
+              {locale === "en" ? "Wild Betta Encyclopedia" : "Ensiklopedia Ikan Laga Liar"}
+            </h1>
             <p className="text-sm text-zinc-400 mt-2">
-              Kaji dan pelajari tentang keunikan spesies ikan laga liar (*Splendens Complex*) di habitat asal mereka.
+              {locale === "en" 
+                ? "Research and learn about the unique wild fighting fish species (*Splendens Complex*) in their natural habitat." 
+                : "Kaji dan pelajari tentang keunikan spesies ikan laga liar (*Splendens Complex*) di habitat asal mereka."}
             </p>
           </div>
           
@@ -35,7 +41,7 @@ export default function EncyclopediaIndex() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari spesies atau artikel..."
+              placeholder={locale === "en" ? "Search species or article..." : "Cari spesies atau artikel..."}
               className="w-full rounded-xl border border-border-custom bg-card/30 pl-10 pr-4 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all backdrop-blur-sm"
             />
           </div>
@@ -45,7 +51,9 @@ export default function EncyclopediaIndex() {
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
           {filteredBettas.length === 0 ? (
             <div className="w-full text-center py-12 border border-dashed border-border-custom rounded-2xl bg-card/10 col-span-full">
-              <p className="text-xs text-zinc-500 italic">Tiada artikel ditemui bagi carian "{searchQuery}"</p>
+              <p className="text-xs text-zinc-500 italic">
+                {locale === "en" ? `No articles found for "${searchQuery}"` : `Tiada artikel ditemui bagi carian "${searchQuery}"`}
+              </p>
             </div>
           ) : (
             filteredBettas.map((fish) => (
@@ -74,12 +82,14 @@ export default function EncyclopediaIndex() {
                     </h3>
                     <p className="text-xs text-primary italic font-serif mt-1 mb-3">{fish.scientificName}</p>
                     <p className="text-xs text-zinc-400 leading-relaxed line-clamp-3">
-                      {fish.description}
+                      {fish.description[locale]}
                     </p>
                   </div>
                 </div>
                 <div className="p-6 pt-0">
-                  <span className="text-xs font-black text-primary group-hover:underline">Baca Kisah Penuh →</span>
+                  <span className="text-xs font-black text-primary group-hover:underline">
+                    {locale === "en" ? "Read Full Story →" : "Baca Kisah Penuh →"}
+                  </span>
                 </div>
               </div>
             ))

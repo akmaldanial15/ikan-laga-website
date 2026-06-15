@@ -216,9 +216,9 @@ export default function ArticleDetailPage({ params }: PageProps) {
             <div className="text-sm md:text-base text-zinc-300 leading-relaxed text-justify space-y-6 font-sans">
               <p>
                 <span className="float-left mr-3 text-7xl md:text-8xl font-black text-primary font-serif leading-[0.8] mt-2">
-                  {fish.fullStory.charAt(0)}
+                  {fish.fullStory[locale].charAt(0)}
                 </span>
-                {fish.fullStory.slice(1)}
+                {fish.fullStory[locale].slice(1)}
               </p>
             </div>
 

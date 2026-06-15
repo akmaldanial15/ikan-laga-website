@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import { Outfit, Playfair_Display, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import OceanBackground from "@/components/OceanBackground";
 import Header from "@/components/Header";
+import OceanBackground from "@/components/OceanBackground";
 import { LanguageProvider } from "@/context/LanguageContext";
+import type { Metadata } from "next";
+import { Geist_Mono, Outfit, Playfair_Display } from "next/font/google";
+import "./globals.css";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased overflow-y-scroll`}
     >
       <body className="min-h-full flex flex-col relative bg-background">
         <LanguageProvider>

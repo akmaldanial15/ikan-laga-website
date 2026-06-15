@@ -3,6 +3,7 @@
 import { BettaFish, mockBettas } from "@/mock/mockData";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CartItem {
   fish: BettaFish;
@@ -13,6 +14,7 @@ type ShopView = "catalog" | "detail" | "checkout";
 
 export default function Shop() {
   const router = useRouter();
+  const { locale } = useLanguage();
   const [view, setView] = useState<ShopView>("catalog");
   const [selectedFish, setSelectedFish] = useState<BettaFish | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -161,8 +163,12 @@ export default function Shop() {
           <div className="animate-fade-in">
             <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div>
-                <h1 className="text-3xl font-black font-serif tracking-tight text-white">Katalog Ikan Laga Liar</h1>
-                <p className="text-sm text-zinc-400 mt-2">Pilih baka ikan laga liar pilihan anda di bawah untuk membuat tempahan.</p>
+                <h1 className="text-3xl font-black font-serif tracking-tight text-white">
+                  {locale === "en" ? "Wild Betta Catalog" : "Katalog Ikan Laga Liar"}
+                </h1>
+                <p className="text-sm text-zinc-400 mt-2">
+                  {locale === "en" ? "Choose your preferred wild betta species below to make a reservation." : "Pilih spesis ikan laga liar pilihan anda di bawah untuk membuat tempahan."}
+                </p>
               </div>
               {/* Product Search with Icon */}
               <div className="relative w-full md:max-w-xs font-sans">
@@ -171,7 +177,7 @@ export default function Shop() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari baka ikan..."
+                  placeholder={locale === "en" ? "Search fish species..." : "Cari spesis ikan..."}
                   className="w-full rounded-xl border border-border-custom bg-card/30 pl-10 pr-4 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all backdrop-blur-sm"
                 />
               </div>
@@ -188,7 +194,7 @@ export default function Shop() {
                     : "bg-card/20 text-zinc-400 border-border-custom hover:border-primary/40 hover:text-white"
                     }`}
                 >
-                  {cat === "Semua" ? "🐟 Semua" : cat}
+                  {cat === "Semua" ? (locale === "en" ? "🐟 All" : "🐟 Semua") : cat}
                 </button>
               ))}
             </div>
@@ -196,7 +202,9 @@ export default function Shop() {
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
               {filteredBettas.length === 0 ? (
                 <div className="w-full text-center py-12 border border-dashed border-border-custom rounded-2xl bg-card/10 col-span-full">
-                  <p className="text-xs text-zinc-500 italic">Tiada baka ikan ditemui bagi carian "{searchQuery}"</p>
+                  <p className="text-xs text-zinc-500 italic">
+                    {locale === "en" ? `No fish species found for "${searchQuery}"` : `Tiada spesis ikan ditemui bagi carian "${searchQuery}"`}
+                  </p>
                 </div>
               ) : (
                 filteredBettas.map((fish) => (
@@ -225,12 +233,14 @@ export default function Shop() {
                         </div>
                         <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors duration-200">{fish.name}</h3>
                         <p className="text-xs text-zinc-400 mt-2 leading-relaxed line-clamp-2">
-                          {fish.description}
+                          {fish.description[locale]}
                         </p>
                       </div>
                     </div>
                     <div className="p-6 pt-0">
-                      <span className="text-xs font-black text-primary group-hover:underline">Lihat Spesifikasi & Beli →</span>
+                      <span className="text-xs font-black text-primary group-hover:underline">
+                        {locale === "en" ? "View Specifications & Buy →" : "Lihat Spesifikasi & Beli →"}
+                      </span>
                     </div>
                   </div>
                 ))
@@ -253,13 +263,15 @@ export default function Shop() {
                 onClick={() => setView("catalog")}
                 className="cursor-pointer absolute top-4 left-4 rounded-xl bg-black/55 backdrop-blur-sm text-white px-4 py-2 text-xs font-extrabold hover:bg-black/75 transition-all"
               >
-                ← Kembali ke Katalog
+                {locale === "en" ? "← Back to Catalog" : "← Kembali ke Katalog"}
               </button>
             </div>
 
             <div className="p-6 md:p-10 space-y-8">
               <div>
-                <span className="text-xs text-zinc-400 font-semibold tracking-wider">📍 ASAL HABITAT: {selectedFish.origin}</span>
+                <span className="text-xs text-zinc-400 font-semibold tracking-wider">
+                  {locale === "en" ? "📍 HABITAT ORIGIN: " : "📍 ASAL HABITAT: "}{selectedFish.origin}
+                </span>
                 <h2 className="text-3xl font-black font-serif text-white mt-1.5">{selectedFish.name}</h2>
                 <p className="text-sm text-primary font-serif italic mt-0.5">{selectedFish.scientificName}</p>
               </div>
@@ -267,28 +279,44 @@ export default function Shop() {
               {/* Product Specifications Grid */}
               <div className="grid grid-cols-2 gap-6 border-t border-b border-border-custom/80 py-6">
                 <div>
-                  <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">Harga Tempahan</span>
+                  <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">
+                    {locale === "en" ? "Reservation Price" : "Harga Tempahan"}
+                  </span>
                   <p className="text-2xl font-black text-primary mt-0.5">RM {selectedFish.price.toFixed(2)}</p>
                 </div>
                 <div>
-                  <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">Status Stok</span>
-                  <p className="text-sm font-extrabold text-emerald-400 mt-1.5">🟢 Ready Stock (Tersedia)</p>
+                  <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">
+                    {locale === "en" ? "Stock Status" : "Status Stok"}
+                  </span>
+                  <p className="text-sm font-extrabold text-emerald-400 mt-1.5">
+                    {locale === "en" ? "🟢 Ready Stock" : "🟢 Ready Stock (Tersedia)"}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">Rarity Spesies</span>
+                  <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">
+                    {locale === "en" ? "Species Rarity" : "Rarity Spesies"}
+                  </span>
                   <p className="text-sm font-extrabold text-white mt-1">{selectedFish.rarity}</p>
                 </div>
                 <div>
-                  <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">Kaedah Pembungkusan</span>
-                  <p className="text-sm font-medium text-white mt-1">Styrofoam Box + Kotak Tebal</p>
+                  <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">
+                    {locale === "en" ? "Packaging Method" : "Kaedah Pembungkusan"}
+                  </span>
+                  <p className="text-sm font-medium text-white mt-1">
+                    {locale === "en" ? "Styrofoam Box + Thick Carton" : "Styrofoam Box + Kotak Tebal"}
+                  </p>
                 </div>
               </div>
 
               {/* General Fish Info (Short specs) */}
               <div className="space-y-3">
-                <h3 className="text-xs font-black text-white uppercase tracking-wider">Spesifikasi Pembelian:</h3>
+                <h3 className="text-xs font-black text-white uppercase tracking-wider">
+                  {locale === "en" ? "Purchase Specifications:" : "Spesifikasi Pembelian:"}
+                </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Baka ikan laga liar yang ditawarkan disaring terlebih dahulu untuk menjamin kualiti terbaik. Kami menjamin pembungkusan yang selamat dengan ruang udara yang mencukupi untuk penghantaran kurier. Penghantaran dibuat ke seluruh negara.
+                  {locale === "en"
+                    ? "Wild betta species offered are pre-screened to ensure the best quality. We guarantee safe packaging with sufficient air space for courier delivery. Nationwide delivery is available."
+                    : "Spesis ikan laga liar yang ditawarkan disaring terlebih dahulu untuk menjamin kualiti terbaik. Kami menjamin pembungkusan yang selamat dengan ruang udara yang mencukupi untuk penghantaran kurier. Penghantaran dibuat ke seluruh negara."}
                 </p>
               </div>
 
@@ -298,13 +326,13 @@ export default function Shop() {
                   onClick={() => handleBuyNow(selectedFish)}
                   className="cursor-pointer flex-1 rounded-xl bg-primary py-4 text-xs font-black text-black text-center hover:scale-[1.01] hover:shadow-lg hover:shadow-primary/10 transition-all active:scale-[0.99]"
                 >
-                  🛒 Beli Sekarang (Buy Now)
+                  {locale === "en" ? "🛒 Buy Now" : "🛒 Beli Sekarang"}
                 </button>
                 <a
                   href={`/?article=${selectedFish.id}`}
                   className="rounded-xl border border-border-custom bg-zinc-950/20 py-4 px-6 text-xs font-bold text-zinc-400 hover:text-foreground text-center transition-all cursor-pointer"
                 >
-                  📖 Baca Artikel Ensiklopedia
+                  {locale === "en" ? "📖 Read Encyclopedia Article" : "📖 Baca Artikel Ensiklopedia"}
                 </a>
               </div>
             </div>
@@ -315,18 +343,22 @@ export default function Shop() {
         {view === "checkout" && cart.length > 0 && (
           <div className="max-w-2xl mx-auto space-y-8 animate-scale-up">
             <div className="flex items-center justify-between border-b border-border-custom pb-4">
-              <h1 className="text-2xl font-black font-serif tracking-tight text-white">Checkout Pesanan</h1>
+              <h1 className="text-2xl font-black font-serif tracking-tight text-white">
+                {locale === "en" ? "Order Checkout" : "Checkout Pesanan"}
+              </h1>
               <button
                 onClick={() => setView("detail")}
                 className="cursor-pointer rounded-xl border border-border-custom bg-card/50 px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white transition-all"
               >
-                ← Kembali ke Detail
+                {locale === "en" ? "← Back to Details" : "← Kembali ke Detail"}
               </button>
             </div>
 
             {/* Cart summary */}
             <div className="rounded-2xl border border-border-custom bg-card/45 p-6 md:p-8 space-y-6">
-              <h3 className="text-xs font-black text-white uppercase tracking-wider text-primary">Ringkasan Troli</h3>
+              <h3 className="text-xs font-black text-white uppercase tracking-wider text-primary">
+                {locale === "en" ? "Cart Summary" : "Ringkasan Troli"}
+              </h3>
               {cart.map((item) => (
                 <div key={item.fish.id} className="flex items-center justify-between border-b border-border-custom/50 pb-5">
                   <div>
@@ -354,18 +386,24 @@ export default function Shop() {
                 </div>
               ))}
               <div className="flex justify-between items-center pt-2">
-                <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">Jumlah Keseluruhan</span>
+                <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
+                  {locale === "en" ? "Total Amount" : "Jumlah Keseluruhan"}
+                </span>
                 <span className="text-xl font-black text-primary">RM {calculateTotal().toFixed(2)}</span>
               </div>
             </div>
 
             {/* Checkout Form */}
             <form onSubmit={handleCheckout} className="rounded-2xl border border-border-custom bg-card/45 p-6 md:p-8 space-y-6">
-              <h3 className="text-xs font-black text-white uppercase tracking-wider text-primary">Maklumat Pos Penerima</h3>
+              <h3 className="text-xs font-black text-white uppercase tracking-wider text-primary">
+                {locale === "en" ? "Recipient Shipping Details" : "Maklumat Pos Penerima"}
+              </h3>
 
               <div className="space-y-4 font-sans">
                 <div>
-                  <label className="block text-[10px] text-zinc-500 uppercase font-black tracking-wider mb-1.5">Nama Penuh</label>
+                  <label className="block text-[10px] text-zinc-500 uppercase font-black tracking-wider mb-1.5">
+                    {locale === "en" ? "Full Name" : "Nama Penuh"}
+                  </label>
                   <input
                     type="text"
                     required
@@ -377,7 +415,9 @@ export default function Shop() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-zinc-500 uppercase font-black tracking-wider mb-1.5">Nombor Telefon</label>
+                  <label className="block text-[10px] text-zinc-500 uppercase font-black tracking-wider mb-1.5">
+                    {locale === "en" ? "Phone Number" : "Nombor Telefon"}
+                  </label>
                   <input
                     type="tel"
                     required
@@ -389,7 +429,9 @@ export default function Shop() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-zinc-500 uppercase font-black tracking-wider mb-1.5">Alamat Penghantaran Lengkap</label>
+                  <label className="block text-[10px] text-zinc-500 uppercase font-black tracking-wider mb-1.5">
+                    {locale === "en" ? "Full Delivery Address" : "Alamat Penghantaran Lengkap"}
+                  </label>
                   <textarea
                     required
                     rows={4}
@@ -401,7 +443,9 @@ export default function Shop() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-zinc-500 uppercase font-black tracking-wider mb-1.5">Pilihan Kurier / Hantar</label>
+                  <label className="block text-[10px] text-zinc-500 uppercase font-black tracking-wider mb-1.5">
+                    {locale === "en" ? "Courier / Delivery Options" : "Pilihan Kurier / Hantar"}
+                  </label>
                   <select
                     value={courier}
                     onChange={(e) => setCourier(e.target.value)}
@@ -420,7 +464,7 @@ export default function Shop() {
                 type="submit"
                 className="cursor-pointer w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 py-4 text-xs font-black text-black shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/25 transition-all active:scale-[0.99]"
               >
-                💬 Hantar Pesanan Ke WhatsApp Banglong
+                {locale === "en" ? "💬 Send Order to Banglong's WhatsApp" : "💬 Hantar Pesanan Ke WhatsApp Banglong"}
               </button>
             </form>
           </div>

@@ -2,11 +2,13 @@
 
 import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Header() {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { locale, setLocale } = useLanguage();
 
   // Secret routing to admin panel via Ctrl + Click
   const handleMyClick = (e: React.MouseEvent) => {
@@ -32,61 +34,110 @@ export default function Header() {
             onClick={handleMyClick}
             className="rounded bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary select-none cursor-default active:bg-primary/20"
           >
-            MY
+            {locale.toUpperCase()}
           </span>
         </div>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-6">
-          <a href="/encyclopedia" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
-            Ensiklopedia
-          </a>
-          <a href="/shop" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
-            Kedai
-          </a>
-          <a href="/leaves" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
-            Daun Ketapang
-          </a>
-          <a href="/care" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
-            Penjagaan
-          </a>
-          <a href="/purchase" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
-            Cara Beli
-          </a>
-          <a href="/contact" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
-            Hubungi
-          </a>
-        </nav>
+        {/* Desktop Nav Links & Language Toggle */}
+        <div className="hidden md:flex items-center gap-6">
+          <nav className="flex items-center gap-6">
+            <a href="/encyclopedia" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
+              {locale === "en" ? "Encyclopedia" : "Ensiklopedia"}
+            </a>
+            <a href="/shop" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
+              {locale === "en" ? "Shop" : "Kedai"}
+            </a>
+            <a href="/leaves" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
+              {locale === "en" ? "Ketapang Leaves" : "Daun Ketapang"}
+            </a>
+            <a href="/care" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
+              {locale === "en" ? "Care Guide" : "Penjagaan"}
+            </a>
+            <a href="/purchase" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
+              {locale === "en" ? "How to Buy" : "Cara Beli"}
+            </a>
+            <a href="/contact" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors">
+              {locale === "en" ? "Contact" : "Hubungi"}
+            </a>
+          </nav>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden flex h-10 w-10 items-center justify-center rounded-xl border border-border-custom bg-card/45 text-white focus:outline-none"
-        >
-          ☰
-        </button>
+          <div className="flex rounded-lg overflow-hidden border border-border-custom/50 bg-zinc-950/50 backdrop-blur-sm ml-2">
+            <button
+              onClick={() => setLocale("en")}
+              className={`cursor-pointer px-2.5 py-1.5 text-[10px] font-black tracking-wider transition-all duration-200 ${
+                locale === "en"
+                  ? "bg-primary/15 text-primary border-r border-primary/20"
+                  : "text-zinc-500 hover:text-zinc-300 border-r border-border-custom/30"
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => setLocale("my")}
+              className={`cursor-pointer px-2.5 py-1.5 text-[10px] font-black tracking-wider transition-all duration-200 ${
+                locale === "my"
+                  ? "bg-primary/15 text-primary"
+                  : "text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              MY
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Button & Language Toggle */}
+        <div className="md:hidden flex items-center gap-3">
+          <div className="flex rounded-lg overflow-hidden border border-border-custom/50 bg-zinc-950/50 backdrop-blur-sm">
+            <button
+              onClick={() => setLocale("en")}
+              className={`cursor-pointer px-2.5 py-1.5 text-[10px] font-black tracking-wider transition-all duration-200 ${
+                locale === "en"
+                  ? "bg-primary/15 text-primary border-r border-primary/20"
+                  : "text-zinc-500 hover:text-zinc-300 border-r border-border-custom/30"
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => setLocale("my")}
+              className={`cursor-pointer px-2.5 py-1.5 text-[10px] font-black tracking-wider transition-all duration-200 ${
+                locale === "my"
+                  ? "bg-primary/15 text-primary"
+                  : "text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              MY
+            </button>
+          </div>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-border-custom bg-card/45 text-white focus:outline-none"
+          >
+            ☰
+          </button>
+        </div>
       </div>
 
       {/* Mobile Dropdown Panel */}
       {mobileMenuOpen && (
         <nav className="md:hidden flex flex-col border-t border-border-custom bg-background px-6 py-4 space-y-3 animate-fade-in font-sans">
           <a href="/encyclopedia" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors py-1.5" onClick={() => setMobileMenuOpen(false)}>
-            Ensiklopedia
+            {locale === "en" ? "Encyclopedia" : "Ensiklopedia"}
           </a>
           <a href="/shop" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors py-1.5" onClick={() => setMobileMenuOpen(false)}>
-            Kedai
+            {locale === "en" ? "Shop" : "Kedai"}
           </a>
           <a href="/leaves" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors py-1.5" onClick={() => setMobileMenuOpen(false)}>
-            Daun Ketapang
+            {locale === "en" ? "Ketapang Leaves" : "Daun Ketapang"}
           </a>
           <a href="/care" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors py-1.5" onClick={() => setMobileMenuOpen(false)}>
-            Penjagaan
+            {locale === "en" ? "Care Guide" : "Penjagaan"}
           </a>
           <a href="/purchase" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors py-1.5" onClick={() => setMobileMenuOpen(false)}>
-            Cara Beli
+            {locale === "en" ? "How to Buy" : "Cara Beli"}
           </a>
           <a href="/contact" className="text-xs font-black uppercase tracking-wider text-zinc-400 hover:text-white transition-colors py-1.5" onClick={() => setMobileMenuOpen(false)}>
-            Hubungi
+            {locale === "en" ? "Contact" : "Hubungi"}
           </a>
         </nav>
       )}

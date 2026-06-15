@@ -3,10 +3,12 @@
 import React, { useState } from "react";
 import { mockBettas, BettaFish } from "@/mock/mockData";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Home() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const { locale } = useLanguage();
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -43,20 +45,21 @@ export default function Home() {
           
           <div className="p-8 md:p-14 relative -mt-32 md:-mt-40 z-10">
             <div className="inline-block rounded-full bg-primary/20 border border-primary/30 px-3.5 py-1 text-[10px] font-extrabold tracking-wider text-primary mb-4">
-              ✨ KHAZANAH LIAR MALAYSIA
+              {locale === "en" ? "✨ MALAYSIA'S WILD TREASURE" : "✨ KHAZANAH LIAR MALAYSIA"}
             </div>
             <h1 className="text-3xl md:text-5xl font-black font-serif leading-tight tracking-tight text-white mb-4 max-w-2xl">
-              Keindahan Liar Yang Tersembunyi
+              {locale === "en" ? "The Hidden Wild Beauty" : "Keindahan Liar Yang Tersembunyi"}
             </h1>
             <p className="text-sm md:text-base text-zinc-400 leading-relaxed mb-6 max-w-xl">
-              Menerokai dunia ikan laga liar di habitat semulajadi tanah air kita. 
-              Satu perkongsian penceritaan untuk menghargai warisan alam semula jadi kita.
+              {locale === "en" 
+                ? "Explore the world of wild fighting fish in their natural habitat. A storytelling journey to appreciate our natural heritage."
+                : "Menerokai dunia ikan laga liar di habitat semulajadi tanah air kita. Satu perkongsian penceritaan untuk menghargai warisan alam semula jadi kita."}
             </p>
             <button
               onClick={() => router.push(`/encyclopedia/${mockBettas[0].id}`)}
               className="cursor-pointer rounded-xl bg-primary px-7 py-3.5 text-xs font-black text-black shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98]"
             >
-              Baca Kisah Imbellis
+              {locale === "en" ? "Read Imbellis Story" : "Baca Kisah Imbellis"}
             </button>
           </div>
         </section>
@@ -65,8 +68,12 @@ export default function Home() {
         <section id="encyclopedia" className="my-16 scroll-mt-24">
           <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <h2 className="text-3xl font-black font-serif tracking-tight text-white">Ensiklopedia Ikan Laga Liar</h2>
-              <p className="text-sm text-zinc-400 mt-2">Ketahui keunikan setiap spesies di habitat asal mereka.</p>
+              <h2 className="text-3xl font-black font-serif tracking-tight text-white">
+                {locale === "en" ? "Wild Betta Encyclopedia" : "Ensiklopedia Ikan Laga Liar"}
+              </h2>
+              <p className="text-sm text-zinc-400 mt-2">
+                {locale === "en" ? "Discover the uniqueness of each species in their original habitat." : "Ketahui keunikan setiap spesies di habitat asal mereka."}
+              </p>
             </div>
             {/* Search Input with Search Icon */}
             <div className="relative w-full md:max-w-xs">
@@ -75,7 +82,7 @@ export default function Home() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari artikel ikan..."
+                placeholder={locale === "en" ? "Search fish articles..." : "Cari artikel ikan..."}
                 className="w-full rounded-xl border border-border-custom bg-card/30 pl-10 pr-4 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all backdrop-blur-sm"
               />
             </div>
@@ -85,7 +92,9 @@ export default function Home() {
           <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-thin scrollbar-thumb-border-custom scrollbar-track-transparent">
             {filteredBettas.length === 0 ? (
               <div className="w-full text-center py-12 border border-dashed border-border-custom rounded-2xl bg-card/10">
-                <p className="text-xs text-zinc-500 italic">Tiada artikel ditemui bagi carian "{searchQuery}"</p>
+                <p className="text-xs text-zinc-500 italic">
+                  {locale === "en" ? `No articles found for "${searchQuery}"` : `Tiada artikel ditemui bagi carian "${searchQuery}"`}
+                </p>
               </div>
             ) : (
               filteredBettas.map((fish) => (
@@ -102,7 +111,7 @@ export default function Home() {
                     />
                     {!fish.orderable && (
                       <span className="absolute top-3 right-3 rounded-full bg-zinc-950/80 backdrop-blur-sm px-3 py-1 text-[10px] font-black text-zinc-400 border border-zinc-700/50">
-                        🏛️ Pameran Sahaja
+                        {locale === "en" ? "🏛️ Exhibition Only" : "🏛️ Pameran Sahaja"}
                       </span>
                     )}
                   </div>
@@ -118,8 +127,10 @@ export default function Home() {
                     </div>
                     <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors duration-200">{fish.name}</h3>
                     <p className="text-xs text-primary italic font-serif mt-1 mb-4">{fish.scientificName}</p>
-                    <p className="text-xs text-zinc-400 leading-relaxed line-clamp-2">{fish.description}</p>
-                    <span className="text-xs font-black text-primary mt-5 inline-block group-hover:underline">Baca Cerita Lengkap →</span>
+                    <p className="text-xs text-zinc-400 leading-relaxed line-clamp-2">{fish.description[locale]}</p>
+                    <span className="text-xs font-black text-primary mt-5 inline-block group-hover:underline">
+                      {locale === "en" ? "Read Full Story →" : "Baca Cerita Lengkap →"}
+                    </span>
                   </div>
                 </div>
               ))
