@@ -91,8 +91,8 @@ export default function AdminDashboard() {
       name: newFish.name,
       scientificName: newFish.scientificName || "Sp. Wild",
       origin: newFish.origin || "Malaysia",
-      description: newFish.description,
-      fullStory: newFish.fullStory || newFish.description,
+      description: { en: newFish.description, my: newFish.description },
+      fullStory: { en: newFish.fullStory || newFish.description, my: newFish.fullStory || newFish.description },
       image: "/images/betta_imbellis.png", // Fallback thumbnail
       price: parseFloat(newFish.price),
       inStock: newFish.inStock === "true",
