@@ -4,6 +4,7 @@ import { BettaFish, mockBettas } from "@/mock/mockData";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface CartItem {
   fish: BettaFish;
@@ -15,6 +16,7 @@ type ShopView = "catalog" | "detail" | "checkout";
 export default function Shop() {
   const router = useRouter();
   const { locale } = useLanguage();
+  const { formatPrice, currency } = useCurrency();
   const [view, setView] = useState<ShopView>("catalog");
   const [selectedFish, setSelectedFish] = useState<BettaFish | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -94,13 +96,20 @@ export default function Shop() {
 
     let itemsText = "";
     cart.forEach((item, index) => {
-      itemsText += `${index + 1}. ${item.fish.name} (${item.fish.scientificName}) \n   Kuantiti: ${item.quantity} ekor - RM ${(item.fish.price * item.quantity).toFixed(2)}\n`;
+      const formattedBase = `RM ${(item.fish.price * item.quantity).toFixed(2)}`;
+      const formattedSelected = formatPrice(item.fish.price * item.quantity);
+      const displayPrice = currency === "MYR" ? formattedBase : `${formattedSelected} (${formattedBase})`;
+      itemsText += `${index + 1}. ${item.fish.name} (${item.fish.scientificName}) \n   Kuantiti: ${item.quantity} ekor - ${displayPrice}\n`;
     });
 
     const totalOrder = calculateTotal();
+    const formattedTotalBase = `RM ${totalOrder.toFixed(2)}`;
+    const formattedTotalSelected = formatPrice(totalOrder);
+    const displayTotal = currency === "MYR" ? formattedTotalBase : `${formattedTotalSelected} (${formattedTotalBase})`;
+
     const message = `Salam Banglong! Saya nak order ikan laga liar:\n\n` +
       `📦 PESANAN:\n${itemsText}\n` +
-      `💰 JUMLAH KESELURUHAN: RM ${totalOrder.toFixed(2)}\n` +
+      `💰 JUMLAH KESELURUHAN: ${displayTotal}\n` +
       `🚚 KURIER PILIHAN: ${courier}\n\n` +
       `👤 MAKLUMAT PENGHANTARAN:\n` +
       `Nama: ${customerName}\n` +
@@ -221,7 +230,7 @@ export default function Shop() {
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-103"
                         />
                         <span className="absolute bottom-3 right-3 rounded-xl bg-zinc-950/80 backdrop-blur-sm px-3.5 py-2 text-xs font-black text-primary border border-primary/20">
-                          RM {fish.price.toFixed(2)}
+                          {formatPrice(fish.price)}
                         </span>
                       </div>
                       <div className="p-6">
@@ -282,7 +291,7 @@ export default function Shop() {
                   <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">
                     {locale === "en" ? "Reservation Price" : "Harga Tempahan"}
                   </span>
-                  <p className="text-2xl font-black text-primary mt-0.5">RM {selectedFish.price.toFixed(2)}</p>
+                  <p className="text-2xl font-black text-primary mt-0.5">{formatPrice(selectedFish.price)}</p>
                 </div>
                 <div>
                   <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">
@@ -381,7 +390,7 @@ export default function Shop() {
                         +
                       </button>
                     </div>
-                    <span className="text-lg font-black text-primary">RM {(item.fish.price * item.quantity).toFixed(2)}</span>
+                    <span className="text-lg font-black text-primary">{formatPrice(item.fish.price * item.quantity)}</span>
                   </div>
                 </div>
               ))}
@@ -389,7 +398,7 @@ export default function Shop() {
                 <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
                   {locale === "en" ? "Total Amount" : "Jumlah Keseluruhan"}
                 </span>
-                <span className="text-xl font-black text-primary">RM {calculateTotal().toFixed(2)}</span>
+                <span className="text-xl font-black text-primary">{formatPrice(calculateTotal())}</span>
               </div>
             </div>
 

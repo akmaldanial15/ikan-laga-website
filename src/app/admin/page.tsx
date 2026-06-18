@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "./admin.module.css";
 import { mockBettas, BettaFish } from "../../mock/mockData";
+import Link from "next/link";
+import { useCurrency } from "../../context/CurrencyContext";
 
 export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -10,11 +12,53 @@ export default function AdminDashboard() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  const [activeTab, setActiveTab] = useState("products"); // 'products' | 'articles'
+  const [activeTab, setActiveTab] = useState("products"); // 'products' | 'articles' | 'currency'
   const [products, setProducts] = useState<BettaFish[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [customCategory, setCustomCategory] = useState("");
   const [showCustomCategory, setShowCustomCategory] = useState(false);
+
+  const { currencyList, addCurrency, removeCurrency, updateCurrencyRate } = useCurrency();
+
+  const [newCode, setNewCode] = useState("");
+  const [newSymbol, setNewSymbol] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newRate, setNewRate] = useState("");
+
+  const handleAddCurrency = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCode || !newSymbol || !newName || !newRate) {
+      alert("Sila isi semua maklumat mata wang.");
+      return;
+    }
+
+    const rateVal = parseFloat(newRate);
+    if (isNaN(rateVal) || rateVal <= 0) {
+      alert("Sila masukkan kadar tukaran yang sah.");
+      return;
+    }
+
+    const codeUpper = newCode.toUpperCase().trim();
+    if (currencyList.some((c) => c.code === codeUpper)) {
+      alert(`Mata wang dengan kod "${codeUpper}" sudah wujud!`);
+      return;
+    }
+
+    addCurrency({
+      code: codeUpper,
+      symbol: newSymbol.trim(),
+      name: newName.trim(),
+      rate: rateVal,
+    });
+
+    setSuccessMessage(`Berjaya menambah mata wang "${codeUpper}"!`);
+    setTimeout(() => setSuccessMessage(""), 3000);
+
+    setNewCode("");
+    setNewSymbol("");
+    setNewName("");
+    setNewRate("");
+  };
 
   // Product Form State
   const [newFish, setNewFish] = useState({
@@ -170,6 +214,10 @@ export default function AdminDashboard() {
   if (!isLoggedIn) {
     return (
       <div className={styles.container}>
+        {/* Ambient background glows */}
+        <div className={styles.glowBg1}></div>
+        <div className={styles.glowBg2}></div>
+
         <div className={styles.loginWrapper}>
           <div className={styles.card}>
             <div className={styles.cardHeader}>
@@ -208,6 +256,12 @@ export default function AdminDashboard() {
               <button type="submit" className={styles.button}>
                 Log Masuk
               </button>
+
+              <div className={styles.backToHomeWrapper}>
+                <Link href="/" className={styles.backToHomeLink}>
+                  ← Kembali ke Halaman Utama
+                </Link>
+              </div>
             </form>
           </div>
         </div>
@@ -217,16 +271,45 @@ export default function AdminDashboard() {
 
   return (
     <div className={styles.container}>
+      {/* Ambient background glows */}
+      <div className={styles.glowBg1}></div>
+      <div className={styles.glowBg2}></div>
+
       <div className={styles.dashboardWrapper}>
         
-        {/* Dashboard Header */}
-        <div className={styles.dashboardHeader}>
-          <div>
-            <h1 className={styles.dashboardTitle}>Dashboard Admin</h1>
-            <p className="text-xs text-zinc-400">Uruskan senarai produk ikan laga dan artikel secara dinamik</p>
+        {/* Simple & Clean Admin Nav Header */}
+        <div className={styles.adminNavHeader}>
+          <div className={styles.adminBrand}>
+            <span className="text-2xl">🛡️</span>
+            <div>
+              <h1 className={styles.adminTitle}>Admin Panel</h1>
+              <p className={styles.adminSubtitle}>Wild Betta Malaysia</p>
+            </div>
           </div>
-          <button onClick={handleLogout} className={styles.logoutBtn}>
-            Log Keluar 🚪
+          
+          <div className={styles.adminNavTabs}>
+            <button 
+              className={`${styles.navTab} ${activeTab === "products" ? styles.navTabActive : ""}`}
+              onClick={() => setActiveTab("products")}
+            >
+              🐠 Produk
+            </button>
+            <button 
+              className={`${styles.navTab} ${activeTab === "articles" ? styles.navTabActive : ""}`}
+              onClick={() => setActiveTab("articles")}
+            >
+              📝 Artikel
+            </button>
+            <button 
+              className={`${styles.navTab} ${activeTab === "currency" ? styles.navTabActive : ""}`}
+              onClick={() => setActiveTab("currency")}
+            >
+              ⚙️ Mata Wang
+            </button>
+          </div>
+
+          <button onClick={handleLogout} className={styles.adminLogoutBtn}>
+            Keluar 🚪
           </button>
         </div>
 
@@ -236,22 +319,6 @@ export default function AdminDashboard() {
             ✨ {successMessage}
           </div>
         )}
-
-        {/* Tab Navigation */}
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tab} ${activeTab === "products" ? styles.tabActive : ""}`}
-            onClick={() => setActiveTab("products")}
-          >
-            🐠 Urus Ikan / Produk
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === "articles" ? styles.tabActive : ""}`}
-            onClick={() => setActiveTab("articles")}
-          >
-            📝 Urus Artikel / Panduan
-          </button>
-        </div>
 
         {/* Tab Content: Products */}
         {activeTab === "products" && (
@@ -462,6 +529,143 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Tab Content: Currency Settings (CRUD) */}
+        {activeTab === "currency" && (
+          <div className={styles.crudCurrencyGrid}>
+            
+            {/* Left: Active Currencies List */}
+            <div className={styles.panelCard}>
+              <h2 className={styles.panelTitle}>Senarai Mata Wang Aktif</h2>
+              <p className="text-xs text-zinc-400 mb-6 leading-relaxed">
+                Uruskan kadar pertukaran mata wang berbanding **1 MYR (Ringgit Malaysia)**. 
+                Harga di halaman user akan ditukar mengikut kadar ini secara automatik.
+              </p>
+
+              <div className={styles.currencyListTable}>
+                {currencyList.map((c) => {
+                  const isBase = c.code === "MYR";
+                  return (
+                    <div key={c.code} className={styles.currencyRow}>
+                      <div className={styles.currencyMeta}>
+                        <span className="text-lg font-bold text-cyan-400 min-w-[55px]">{c.code}</span>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-white text-xs">{c.name}</span>
+                          <span className="text-[10px] text-zinc-400">Simbol: {c.symbol}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5 bg-zinc-950/40 px-2.5 py-1.5 rounded-lg border border-border-custom">
+                          <span className="text-[10px] text-zinc-500 font-bold font-sans">Kadar:</span>
+                          <input
+                            type="number"
+                            step="0.0001"
+                            disabled={isBase}
+                            className={styles.currencyRateInput}
+                            defaultValue={c.rate}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.currentTarget.blur();
+                              }
+                            }}
+                            onBlur={(e) => {
+                              const val = parseFloat(e.target.value);
+                              if (val > 0 && val !== c.rate) {
+                                updateCurrencyRate(c.code, val);
+                                setSuccessMessage(`Berjaya mengemaskini kadar ${c.code} kepada ${val}!`);
+                                setTimeout(() => setSuccessMessage(""), 3000);
+                              }
+                            }}
+                          />
+                        </div>
+
+                        {!isBase && (
+                          <button
+                            onClick={() => {
+                              if (confirm(`Adakah anda pasti mahu memadam mata wang ${c.code}?`)) {
+                                removeCurrency(c.code);
+                                setSuccessMessage(`Berjaya memadam mata wang ${c.code}!`);
+                                setTimeout(() => setSuccessMessage(""), 3000);
+                              }
+                            }}
+                            className={styles.currencyDeleteBtn}
+                            title="Padam Mata Wang"
+                          >
+                            🗑️
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right: Add New Currency Form */}
+            <div className={styles.panelCard}>
+              <h2 className={styles.panelTitle}>Tambah Mata Wang Baru</h2>
+              
+              <form onSubmit={handleAddCurrency} className={styles.form}>
+                <div className={styles.inputGroup}>
+                  <label className={styles.label}>Kod Mata Wang (e.g. SGD, IDR)</label>
+                  <input
+                    type="text"
+                    maxLength={5}
+                    placeholder="e.g. SGD"
+                    className={styles.input}
+                    value={newCode}
+                    onChange={(e) => setNewCode(e.target.value.toUpperCase())}
+                    required
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label className={styles.label}>Simbol Mata Wang (e.g. S$, Rp, £)</label>
+                  <input
+                    type="text"
+                    maxLength={5}
+                    placeholder="e.g. S$"
+                    className={styles.input}
+                    value={newSymbol}
+                    onChange={(e) => setNewSymbol(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label className={styles.label}>Nama Mata Wang (e.g. Singapore Dollar)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Singapore Dollar"
+                    className={styles.input}
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label className={styles.label}>Kadar Tukaran (1 MYR = ?)</label>
+                  <input
+                    type="number"
+                    step="0.0001"
+                    placeholder="e.g. 0.31"
+                    className={styles.input}
+                    value={newRate}
+                    onChange={(e) => setNewRate(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button type="submit" className={styles.button}>
+                  Tambah Mata Wang ➕
+                </button>
+              </form>
+            </div>
+
           </div>
         )}
 

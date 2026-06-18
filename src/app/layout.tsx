@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import OceanBackground from "@/components/OceanBackground";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import type { Metadata } from "next";
 import { Geist_Mono, Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
@@ -37,11 +38,13 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col relative bg-background">
         <LanguageProvider>
-          <OceanBackground />
-          <div className="relative z-10 flex-1 flex flex-col">
-            <Header />
-            {children}
-          </div>
+          <CurrencyProvider>
+            <OceanBackground />
+            <div className="relative z-10 flex-1 flex flex-col">
+              <Header />
+              {children}
+            </div>
+          </CurrencyProvider>
         </LanguageProvider>
       </body>
     </html>

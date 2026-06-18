@@ -4,6 +4,7 @@ import React from "react";
 import { mockBettas } from "../../../mock/mockData";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -13,6 +14,7 @@ export default function ProductDetailPage({ params }: PageProps) {
   const router = useRouter();
   const { id } = React.use(params);
   const { locale } = useLanguage();
+  const { formatPrice } = useCurrency();
 
   // Find the fish by its dynamic route ID
   const fish = mockBettas.find((f) => f.id === id);
@@ -91,7 +93,7 @@ export default function ProductDetailPage({ params }: PageProps) {
               <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">
                 {locale === "en" ? "Reservation Price" : "Harga Tempahan"}
               </span>
-              <p className="text-2xl font-black text-primary mt-0.5">RM {fish.price.toFixed(2)}</p>
+              <p className="text-2xl font-black text-primary mt-0.5">{formatPrice(fish.price)}</p>
             </div>
             <div>
               <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider">
